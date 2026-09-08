@@ -9,9 +9,9 @@
 # ---------------------------------------------------------------
 # 1. BOT IDENTITY
 # ---------------------------------------------------------------
-BOT_TITLE = "MY COURSE HUB 🔥"          # Shown conceptually in your messages
+BOT_TITLE = "CourseBari 🔥"          # Shown conceptually in your messages
 WELCOME_TEXT = (
-    "👋 Welcome to *{CourseBari}*!\n\n"
+    "👋 Welcome to *{title}*!\n\n"
     "Browse our courses below and tap a category to get started."
 )
 
