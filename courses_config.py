@@ -106,11 +106,39 @@ CATALOG = {
                 },
             ],
         },
+
+ {
+            "id": "hsc26admission",
+            "title": "🔥 HSC 2026 All Admission Course 🔥",
+            "courses": [
+                {
+                    "id": "ACSUniversityCourse ",
+                    "button_title": "📙 ACS (University) Course",
+                    "price": "৳100",
+                    "detail_text": (
+                        "*ACS VERSITY + GST 2026*\n\n"
+                        "✅ ক্লাস \n"
+                        "✅ ক্লাস এর লেকচার শীট \n"
+                        "✅ Archive Classes\n"
+                        "✅ ক্লাস সাজানো থাকবে টপিক অনুযায়ী \n"
+                        "✅ Practice Sheet\n\n"
+                        "*Price: ৳100*"
+                    ),
+                    "delivery_text": (
+                        "🎉 *Access approved!*\n\n"
+                        "Here is your course link:\n"
+                        "https://t.me/+TJp83JVlE7Q2OGNl\n\n"
+                        "Join with the link above. Welcome aboard!"
+                    ),
+                },
+            ],
+        },
+     
     ],
     # Extra static buttons on the main menu (support, channel, etc.)
     "extra_links": [
-        {"title": "🆘 Support", "url": "https://t.me/your_support_username"},
-        {"title": "📢 Our Channel", "url": "https://t.me/your_channel_username"},
+        {"title": "🆘 Support", "url": "https://t.me/jisan_roy"},
+        {"title": "📢 Our Channel", "url": "https://t.me/CourseBari"},
     ],
 }
 
