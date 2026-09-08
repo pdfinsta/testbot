@@ -17,6 +17,8 @@ only contains logic and should not need to change for content edits.
 
 import logging
 import os
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.constants import ParseMode
@@ -277,6 +279,31 @@ async def handle_admin_decision(update: Update, context: ContextTypes.DEFAULT_TY
 
 
 # ---------------------------------------------------------------
+# Tiny HTTP server — exists ONLY so Render's free "Web Service" tier
+# sees something listening on $PORT and doesn't mark the deploy as
+# failed. It does nothing except reply 200 OK. An external uptime
+# monitor (e.g. UptimeRobot) pinging this URL every few minutes is
+# what keeps the free service from spinning down after inactivity.
+# ---------------------------------------------------------------
+class _HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write(b"Bot is running.")
+
+    def log_message(self, format, *args):
+        pass  # silence default request logging, keep logs clean
+
+
+def _start_health_server():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), _HealthCheckHandler)
+    logger.info("Health-check server listening on port %s", port)
+    server.serve_forever()
+
+
+# ---------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------
 def main():
@@ -287,6 +314,11 @@ def main():
         )
 
     db.init_db()
+
+    # Run the tiny health-check server in a background thread so Render's
+    # free Web Service tier sees a listening port, while the bot itself
+    # runs normally via polling on the main thread.
+    threading.Thread(target=_start_health_server, daemon=True).start()
 
     app = Application.builder().token(token).build()
 
