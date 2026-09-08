@@ -38,75 +38,7 @@ PAYMENT_METHODS_TEXT = (
 
 CATALOG = {
     "categories": [
-        {
-            "id": "cat_batch_2026",
-            "title": "🔥 2026 Batch Courses 🔥",
-            "courses": [
-                {
-                    "id": "course_math_2026",
-                    "button_title": "📘 Math Full Course 2026",
-                    "price": "৳500",
-                    "detail_text": (
-                        "*Math Full Course 2026*\n\n"
-                        "✅ Full video lectures\n"
-                        "✅ Practice sheets\n"
-                        "✅ Live doubt-solving sessions\n"
-                        "✅ Lifetime access\n\n"
-                        "*Price: ৳500*"
-                    ),
-                    # What the buyer receives automatically after admin approval
-                    "delivery_text": (
-                        "🎉 *Access approved!*\n\n"
-                        "Here is your course link:\n"
-                        "https://t.me/your_private_channel_invite_link\n\n"
-                        "Join with the link above. Welcome aboard!"
-                    ),
-                },
-                {
-                    "id": "course_physics_2026",
-                    "button_title": "📗 Physics Full Course 2026",
-                    "price": "৳500",
-                    "detail_text": (
-                        "*Physics Full Course 2026*\n\n"
-                        "✅ Full video lectures\n"
-                        "✅ Practice sheets\n"
-                        "✅ Lifetime access\n\n"
-                        "*Price: ৳500*"
-                    ),
-                    "delivery_text": (
-                        "🎉 *Access approved!*\n\n"
-                        "Here is your course link:\n"
-                        "https://t.me/your_private_channel_invite_link\n\n"
-                        "Join with the link above. Welcome aboard!"
-                    ),
-                },
-            ],
-        },
-        {
-            "id": "cat_batch_2027",
-            "title": "🔥 2027 Batch Courses 🔥",
-            "courses": [
-                {
-                    "id": "course_chem_2027",
-                    "button_title": "📙 Chemistry Full Course 2027",
-                    "price": "৳500",
-                    "detail_text": (
-                        "*Chemistry Full Course 2027*\n\n"
-                        "✅ Full video lectures\n"
-                        "✅ Practice sheets\n"
-                        "✅ Lifetime access\n\n"
-                        "*Price: ৳500*"
-                    ),
-                    "delivery_text": (
-                        "🎉 *Access approved!*\n\n"
-                        "Here is your course link:\n"
-                        "https://t.me/your_private_channel_invite_link\n\n"
-                        "Join with the link above. Welcome aboard!"
-                    ),
-                },
-            ],
-        },
-
+        
  {
             "id": "hsc26admission",
             "title": "🔥 HSC 2026 All Admission Course 🔥",
@@ -131,6 +63,28 @@ CATALOG = {
                         "Join with the link above. Welcome aboard!"
                     ),
                 },
+
+                 {
+                    "id": "PHUniversityCourse ",
+                    "button_title": "📙 CAMPUS 6.0 — HSC 2025/26",
+                    "price": "৳100",
+                    "detail_text": (
+                        "*CAMPUS 6.0 — HSC 2025/26*\n\n"
+                        "✅ ক্লাস \n"
+                        "✅ ক্লাস এর লেকচার শীট \n"
+                        "✅ Archive Classes\n"
+                        "✅ ক্লাস সাজানো থাকবে টপিক অনুযায়ী \n"
+                        "✅ Practice Sheet\n\n"
+                        "*Price: ৳100*"
+                    ),
+                    "delivery_text": (
+                        "🎉 *Access approved!*\n\n"
+                        "Here is your course link:\n"
+                        "https://t.me/+TJp83JVlE7Q2OGNl\n\n"
+                        "Join with the link above. Welcome aboard!"
+                    ),
+                },
+             
             ],
         },
      
