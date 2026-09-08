@@ -30,6 +30,7 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
+from telegram.helpers import escape_markdown
 
 import db
 from courses_config import (
@@ -45,6 +46,33 @@ logging.basicConfig(
     level=logging.INFO,
 )
 logger = logging.getLogger(__name__)
+
+
+# ---------------------------------------------------------------
+# Safe text senders — if a course's detail_text/delivery_text (or any
+# other text from courses_config.py) has broken Markdown, e.g. a "*"
+# with no closing "*", Telegram's parser throws BadRequest and the
+# bot would crash. These wrappers catch that and resend as plain text
+# instead, so a typo in courses_config.py never takes the bot down.
+# ---------------------------------------------------------------
+async def safe_edit_message_text(query, text, reply_markup=None):
+    try:
+        await query.edit_message_text(
+            text, reply_markup=reply_markup, parse_mode=ParseMode.MARKDOWN
+        )
+    except Exception:
+        logger.exception("Markdown parse failed, resending as plain text")
+        await query.edit_message_text(text, reply_markup=reply_markup)
+
+
+async def safe_reply_text(message, text, reply_markup=None):
+    try:
+        await message.reply_text(
+            text, reply_markup=reply_markup, parse_mode=ParseMode.MARKDOWN
+        )
+    except Exception:
+        logger.exception("Markdown parse failed, resending as plain text")
+        await message.reply_text(text, reply_markup=reply_markup)
 
 
 # ---------------------------------------------------------------
@@ -121,9 +149,7 @@ def admin_review_keyboard(request_id: str) -> InlineKeyboardMarkup:
 # ---------------------------------------------------------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = WELCOME_TEXT.format(title=BOT_TITLE)
-    await update.message.reply_text(
-        text, reply_markup=main_menu_keyboard(), parse_mode=ParseMode.MARKDOWN
-    )
+    await safe_reply_text(update.message, text, reply_markup=main_menu_keyboard())
 
 
 # ---------------------------------------------------------------
@@ -135,39 +161,33 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = query.data
 
     if data == "main_menu":
-        await query.edit_message_text(
-            WELCOME_TEXT.format(title=BOT_TITLE),
-            reply_markup=main_menu_keyboard(),
-            parse_mode=ParseMode.MARKDOWN,
+        await safe_edit_message_text(
+            query, WELCOME_TEXT.format(title=BOT_TITLE), reply_markup=main_menu_keyboard()
         )
         return
 
     if data.startswith("cat:"):
         cat_id = data.split(":", 1)[1]
         cat = find_category(cat_id)
-        await query.edit_message_text(
+        await safe_edit_message_text(
+            query,
             f"*{cat['title']}*\n\nChoose a course:",
             reply_markup=category_keyboard(cat_id),
-            parse_mode=ParseMode.MARKDOWN,
         )
         return
 
     if data.startswith("course:"):
         course_id = data.split(":", 1)[1]
         course = find_course(course_id)
-        await query.edit_message_text(
-            course["detail_text"],
-            reply_markup=course_detail_keyboard(course_id),
-            parse_mode=ParseMode.MARKDOWN,
+        await safe_edit_message_text(
+            query, course["detail_text"], reply_markup=course_detail_keyboard(course_id)
         )
         return
 
     if data.startswith("pay:"):
         course_id = data.split(":", 1)[1]
-        await query.edit_message_text(
-            PAYMENT_METHODS_TEXT,
-            reply_markup=payment_keyboard(course_id),
-            parse_mode=ParseMode.MARKDOWN,
+        await safe_edit_message_text(
+            query, PAYMENT_METHODS_TEXT, reply_markup=payment_keyboard(course_id)
         )
         return
 
@@ -177,10 +197,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         db.set_awaiting_screenshot(user_id, course_id)
 
-        await query.edit_message_text(
+        await safe_edit_message_text(
+            query,
             "📸 Please *send a screenshot* of your payment now as a photo message.\n\n"
             "We'll review it and approve your access shortly.",
-            parse_mode=ParseMode.MARKDOWN,
         )
         return
 
@@ -198,10 +218,10 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not course_id:
         # User sent a photo without going through the "Payment Done" flow
-        await update.message.reply_text(
+        await safe_reply_text(
+            update.message,
             "If this is a payment screenshot, please first tap *Buy / Payment Info* "
             "on a course, then *Payment Done*, then send the screenshot.",
-            parse_mode=ParseMode.MARKDOWN,
         )
         return
 
@@ -215,11 +235,18 @@ async def photo_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         course_id=course_id,
     )
 
+    # Escape any Markdown special characters (*, _, [, ], etc.) that might
+    # appear in the course title/price or the buyer's username, so a stray
+    # symbol in courses_config.py can never crash this message.
+    safe_username = escape_markdown(str(user.username or user.first_name), version=1)
+    safe_course_title = escape_markdown(str(course["button_title"]), version=1)
+    safe_price = escape_markdown(str(course["price"]), version=1)
+
     caption = (
         f"🧾 *New payment claim*\n\n"
-        f"User: @{user.username or user.first_name} (ID: `{user.id}`)\n"
-        f"Course: {course['button_title']}\n"
-        f"Price: {course['price']}\n\n"
+        f"User: @{safe_username} (ID: `{user.id}`)\n"
+        f"Course: {safe_course_title}\n"
+        f"Price: {safe_price}\n\n"
         f"Approve or reject below."
     )
 
@@ -261,11 +288,13 @@ async def handle_admin_decision(update: Update, context: ContextTypes.DEFAULT_TY
     course = find_course(request["course_id"])
 
     if action == "approve":
-        await context.bot.send_message(
-            chat_id=user_id,
-            text=course["delivery_text"],
-            parse_mode=ParseMode.MARKDOWN,
-        )
+        try:
+            await context.bot.send_message(
+                chat_id=user_id, text=course["delivery_text"], parse_mode=ParseMode.MARKDOWN
+            )
+        except Exception:
+            logger.exception("Markdown parse failed on delivery_text, resending as plain text")
+            await context.bot.send_message(chat_id=user_id, text=course["delivery_text"])
         await query.edit_message_caption(caption=f"✅ Approved — access sent to user {user_id}.")
     else:
         await context.bot.send_message(
