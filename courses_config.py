@@ -84,6 +84,28 @@ CATALOG = {
                         "Join with the link above. Welcome aboard!"
                     ),
                 },
+
+              {
+                    "id": "udvashUniversityCourse ",
+                    "button_title": "📙 UDVASH VARSITY KA 2026",
+                    "price": "৳0",
+                    "detail_text": (
+                        "*UDVASH VARSITY KA 2026*\n\n"
+                        "📸 পেমেন্টের সময় যেকোনো একটি স্ক্রিনশট দিয়ে দিবেন \n"
+                        "✅ ক্লাস \n"
+                        "✅ ক্লাস এর লেকচার শীট \n"
+                        "✅ Archive Classes\n"
+                        "✅ ক্লাস সাজানো থাকবে টপিক অনুযায়ী \n"
+                        "✅ Practice Sheet\n\n"
+                        "*Price: ৳0*"
+                    ),
+                    "delivery_text": (
+                        "🎉 *Access approved!*\n\n"
+                        "Here is your course link:\n"
+                        "https://t.me/coursebarifree\n\n"
+                        "Join with the link above. Welcome aboard!"
+                    ),
+                },
              
             ],
         },
